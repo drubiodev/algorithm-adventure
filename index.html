@@ -31,7 +31,7 @@
       --cj: #f7c948;
       --hr: #e74c5e;
       --he: #3a3d5c;
-      --cell: min(220px, calc((100vh - 220px) / 8), calc((100vw - 520px) / 9));
+      --cell: min(320px, calc((100vh - 160px) / 7), calc((100vw - 460px) / 8));
     }
 
     * {
@@ -2017,6 +2017,7 @@
 
     function buildGrid(lv) {
       const g = document.getElementById('grid');
+      g.style.setProperty('--cell', `min(320px, calc((100vh - 160px) / ${lv.rows}), calc((100vw - 460px) / ${lv.cols + 1}))`);
       g.style.gridTemplateColumns = `repeat(${lv.cols},var(--cell))`; g.innerHTML = ''; tGems = 0;
       for (let r = 0; r < lv.rows; r++) for (let c = 0; c < lv.cols; c++) {
         const cl = document.createElement('div');
