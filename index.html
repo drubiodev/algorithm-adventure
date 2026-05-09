@@ -2311,28 +2311,19 @@
     function replayLevel() { dismissRes(); loadLvl(cLvl); }
 
     // ========== LEVEL SELECT ==========
-    function isLevelUnlocked(i) {
-      if (i === 0) return true;
-      const t = T();
-      if (!t) return false;
-      // Unlocked if previous level is completed, or we're already at/past it
-      return t.completed.includes(i - 1) || t.completed.includes(i) || i <= cLvl;
-    }
     function showLvSel() {
       if (running) return; const t = T();
       document.getElementById('lvG').innerHTML = LEVELS.map((l, i) => {
         const done = t && t.completed.includes(i);
-        const unlocked = isLevelUnlocked(i);
         const current = i === cLvl;
-        const cls = ['lc', done ? 'done' : '', current ? 'current' : '', !unlocked ? 'locked' : ''].filter(Boolean).join(' ');
-        const click = unlocked ? `onclick="pickLv(${i})"` : '';
-        const badge = !unlocked ? '<div class="lock">🔒</div>' : (done ? '<div class="chk">✅</div>' : '');
-        return `<div class="${cls}" ${click}><div class="num">LEVEL ${i + 1}</div><div class="nm">${l.name}</div><div class="dsc">${l.desc}</div>${badge}</div>`;
+        const cls = ['lc', done ? 'done' : '', current ? 'current' : ''].filter(Boolean).join(' ');
+        const badge = done ? '<div class="chk">✅</div>' : '';
+        return `<div class="${cls}" onclick="pickLv(${i})"><div class="num">LEVEL ${i + 1}</div><div class="nm">${l.name}</div><div class="dsc">${l.desc}</div>${badge}</div>`;
       }).join('');
       document.getElementById('lvOv').classList.add('show');
     }
     function hideLvSel() { document.getElementById('lvOv').classList.remove('show'); }
-    function pickLv(i) { if (!isLevelUnlocked(i)) return; hideLvSel(); loadLvl(i); }
+    function pickLv(i) { hideLvSel(); loadLvl(i); }
     function resetLv() { if (!running) loadLvl(cLvl); }
 
     // ========== FX ==========
