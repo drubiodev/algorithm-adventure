@@ -1097,19 +1097,24 @@
     .lg {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 16px;
     }
 
     .lc {
       background: var(--sb);
-      border-radius: 10px;
-      padding: 12px 8px;
+      border-radius: 12px;
+      padding: 14px 10px;
       cursor: pointer;
       border: 3px solid transparent;
       transition: all 0.15s;
       box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
       position: relative;
+      text-align: center;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .lc:hover {
@@ -1117,24 +1122,64 @@
       transform: translateY(-3px);
     }
 
+    .lc.current {
+      border-color: var(--warn);
+      background: rgba(247, 201, 72, 0.12);
+    }
+
+    .lc.done {
+      background: rgba(92, 219, 92, 0.12);
+    }
+
+    .lc.locked {
+      cursor: not-allowed;
+      opacity: 0.55;
+      filter: grayscale(0.6);
+    }
+
+    .lc.locked:hover {
+      border-color: transparent;
+      transform: none;
+    }
+
     .lc .num {
       font-family: 'Silkscreen', cursive;
-      font-size: 20px;
+      font-size: 14px;
+      color: var(--td);
+      letter-spacing: 1px;
+    }
+
+    .lc .nm {
+      font-family: 'Silkscreen', cursive;
+      font-size: 14px;
       color: var(--accent);
+      margin-top: 4px;
+      line-height: 1.2;
+    }
+
+    .lc.locked .nm {
+      color: var(--td);
     }
 
     .lc .dsc {
-      font-family: 'Silkscreen', cursive;
-      font-size: 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
       color: var(--td);
-      margin-top: 4px;
+      margin-top: 6px;
     }
 
     .lc .chk {
       position: absolute;
       top: 6px;
       right: 8px;
-      font-size: 14px;
+      font-size: 16px;
+    }
+
+    .lc .lock {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 16px;
     }
 
     .ov-cl {
@@ -1215,6 +1260,55 @@
       color: var(--td);
       margin-top: 20px;
       animation: blink 1.5s step-end infinite;
+    }
+
+    .rb-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .rb-btn {
+      font-family: 'Silkscreen', cursive;
+      font-size: 16px;
+      padding: 12px 22px;
+      border-radius: 10px;
+      border: 3px solid var(--sb);
+      background: var(--sf);
+      color: var(--tx);
+      cursor: pointer;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+      transition: all 0.12s;
+    }
+
+    .rb-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.35);
+    }
+
+    .rb-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+    }
+
+    .rb-btn.primary {
+      background: var(--accent);
+      color: #0d1a0d;
+      border-color: var(--gd);
+    }
+
+    .rb-btn.danger {
+      background: var(--danger);
+      color: #fff;
+      border-color: #a83242;
+    }
+
+    .rb-btn.ghost {
+      background: transparent;
+      border-color: var(--td);
+      color: var(--td);
     }
 
     @keyframes blink {
@@ -1667,20 +1761,15 @@
   <div class="hdr">
     <div class="logo"><span class="logo-i">⚔️</span> Algorithm Quest</div>
     <div class="hdr-c">
-      <div class="badge badge-lv" id="lvBadge">World 1</div>
-      <div class="tsw">
-        <div class="ts-btn" onclick="toggleDD()"><span class="nm" id="tDisp">No Team</span><span
-            style="color:var(--td);font-size:10px">▼</span></div>
-        <div class="tdd" id="tDD"></div>
-      </div>
+      <div class="badge badge-lv" id="lvBadge">Level 1</div>
       <div class="hearts" id="hBar"></div>
       <button class="cheat-btn" id="cheatBtn" onclick="activateCheat()" disabled>🔮 CHEAT</button>
       <div class="badge badge-gem">💎 <span id="gemC">0</span></div>
     </div>
     <div class="hdr-a">
       <div class="bi" onclick="showLvSel()" title="Levels">📋</div>
-      <div class="bi" onclick="resetLv()" title="Reset">🔄</div>
-      <div class="bi" onclick="showTeamSetup()" title="Teams">👥</div>
+      <div class="bi" onclick="resetLv()" title="Reset Level">🔄</div>
+      <div class="bi" onclick="confirmReset()" title="Reset Progress">♻️</div>
     </div>
   </div>
 
@@ -1719,39 +1808,27 @@
     </div>
   </div>
 
-  <div class="rov" id="rOv" onclick="dismissRes()">
+  <div class="rov" id="rOv">
     <div class="rb">
       <div class="rb-big" id="rBig">VICTORY!</div>
       <div class="rb-sub" id="rSub"></div>
       <div class="rb-det" id="rDet"></div>
-      <div class="rb-tap">[ tap anywhere ]</div>
-    </div>
-  </div>
-
-  <div class="ov" id="tOv">
-    <div class="ob">
-      <h2>⚔️ Team Setup</h2>
-      <div class="tl" id="tList"></div>
-      <button class="at-btn" id="atBtn" onclick="addTeam()">+ Add Team</button>
-      <div class="ob-actions">
-        <button class="reset-btn" onclick="confirmReset()">🔄 RESET ALL</button>
-        <button class="s-btn" id="sBtn" onclick="startGame()">START QUEST!</button>
-      </div>
+      <div class="rb-actions" id="rActions"></div>
     </div>
   </div>
 
   <div class="ov" id="lvOv">
     <div class="ob">
-      <h2>Select World</h2>
+      <h2>Select a Level</h2>
       <div class="lg" id="lvG"></div>
-      <button class="ov-cl" onclick="hideLvSel()">Cancel</button>
+      <button class="ov-cl" onclick="hideLvSel()">Close</button>
     </div>
   </div>
 
   <div class="ov" id="confirmOv">
     <div class="confirm-box">
-      <h3>⚠️ RESET EVERYTHING?</h3>
-      <p>This wipes all progress, gems, and gives every team a fresh cheat code. Teams are kept.</p>
+      <h3>⚠️ RESET PROGRESS?</h3>
+      <p>This wipes all level progress, gems, and gives you a fresh cheat code.</p>
       <div class="confirm-actions">
         <button class="confirm-no" onclick="hideConfirm()">CANCEL</button>
         <button class="confirm-yes" onclick="doReset()">RESET!</button>
@@ -1880,31 +1957,13 @@
     function selectTeam(i) {
       aTI = i;
       const t = teams[i];
-      document.getElementById('tDisp').textContent = `${t.icon} ${t.name}`;
-      closeDD();
       const nl = t.completed.length < LEVELS.length ? t.completed.length : LEVELS.length - 1;
       loadLvl(nl);
       updateCheatBtn();
     }
 
-    function renderTS() {
-      const l = document.getElementById('tList');
-      l.innerHTML = teams.map((t, i) => `
-    <div class="tr ${i === aTI ? 'active' : ''}">
-      <div class="tc" onclick="cycleIcon(${i})">${t.icon}</div>
-      <input class="tn" value="${esc(t.name)}" onchange="teams[${i}].name=this.value" placeholder="Team name" />
-      <div class="tp">⭐${t.completed.length} 💎${t.gems}</div>
-      <div class="tch">${t.cheat.icon} ${t.cheat.name}</div>
-      <button class="tsel" onclick="selFromSetup(${i})">SELECT</button>
-      <button class="tdel" onclick="remTeam(${i})">✕</button>
-    </div>`).join('');
-      document.getElementById('sBtn').disabled = teams.length === 0;
-    }
-
+    function renderTS() { }
     function esc(s) { return s.replace(/"/g, '&quot;'); }
-    function selFromSetup(i) { aTI = i; renderTS(); }
-    function showTeamSetup() { if (running) return; renderTS(); document.getElementById('tOv').classList.add('show'); }
-    function startGame() { if (!teams.length) return; if (aTI < 0) aTI = 0; document.getElementById('tOv').classList.remove('show'); selectTeam(aTI); }
 
     // ========== RESET ==========
     function confirmReset() { document.getElementById('confirmOv').classList.add('show'); }
@@ -1912,24 +1971,10 @@
     function doReset() {
       hideConfirm();
       teams.forEach(t => { t.completed = []; t.gems = 0; t.cheat = randomCheat(); t.cheatUsedLevels = []; });
-      renderTS();
       if (aTI >= 0) selectTeam(aTI);
     }
 
-    // ========== DROPDOWN ==========
-    function toggleDD() { if (running) return; ddOpen = !ddOpen; renderDD(); }
-    function closeDD() { ddOpen = false; document.getElementById('tDD').classList.remove('show'); }
-    function renderDD() {
-      const dd = document.getElementById('tDD');
-      if (!ddOpen) { dd.classList.remove('show'); return; }
-      dd.innerHTML = teams.map((t, i) => `
-    <div class="tdi ${i === aTI ? 'at' : ''}" onclick="selectTeam(${i})">
-      <span class="tdi-i">${t.icon}</span><span class="tdi-n">${t.name}</span>
-      <span class="tdi-p">⭐${t.completed.length} 💎${t.gems}</span>
-    </div>`).join('') + `<div class="tdm" onclick="closeDD();showTeamSetup()">⚙ Manage Teams</div>`;
-      dd.classList.add('show');
-    }
-    document.addEventListener('click', e => { if (ddOpen && !e.target.closest('.tsw')) closeDD(); });
+    // (team dropdown removed — single-player mode)
 
     // ========== HEARTS ==========
     function renderHP() {
@@ -2007,7 +2052,7 @@
       // Check if cheat was already used this level
       if (t && t.cheatUsedLevels.includes(cLvl)) cheatUsed = true;
       cPos = { col: LEVELS[idx].start[0], row: LEVELS[idx].start[1] };
-      document.getElementById('lvBadge').textContent = `World ${idx + 1}`;
+      document.getElementById('lvBadge').textContent = `Level ${idx + 1} · ${LEVELS[idx].name}`;
       document.getElementById('char').textContent = t ? t.icon : '🧙';
       document.getElementById('char').classList.remove('ghost');
       document.getElementById('gemC').textContent = '0';
@@ -2217,16 +2262,28 @@
       const ch = document.getElementById('char'); ch.classList.add('celebrate'); launchFW();
       const t = T();
       if (t) { if (!t.completed.includes(cLvl)) t.completed.push(cLvl); t.gems += gems; }
+      const hasNext = cLvl + 1 < LEVELS.length;
       setTimeout(() => {
-        document.getElementById('rBig').textContent = 'VICTORY!';
+        document.getElementById('rBig').textContent = 'LEVEL COMPLETE!';
         document.getElementById('rBig').style.color = 'var(--warn)';
-        document.getElementById('rSub').textContent = `${label} crushed it!`;
+        document.getElementById('rSub').textContent = `🎉 ${LEVELS[cLvl].name} cleared!`;
         document.getElementById('rSub').style.color = 'var(--accent)';
         const d = []; if (tGems > 0) d.push(`💎 ${gems}/${tGems} gems`); d.push(`❤️ ${hp}/${MAX_HP} hearts`);
         document.getElementById('rDet').textContent = d.join('  •  ');
         document.getElementById('rDet').style.color = 'var(--water)';
+        const acts = document.getElementById('rActions');
+        if (hasNext) {
+          acts.innerHTML = `
+            <button class="rb-btn primary" onclick="nextLevel()">NEXT LEVEL ▶</button>
+            <button class="rb-btn" onclick="replayLevel()">🔄 REPLAY</button>
+            <button class="rb-btn ghost" onclick="dismissRes();showLvSel()">📋 LEVELS</button>`;
+        } else {
+          acts.innerHTML = `
+            <button class="rb-btn primary" onclick="dismissRes();showLvSel()">🏆 ALL LEVELS DONE!</button>
+            <button class="rb-btn" onclick="replayLevel()">🔄 REPLAY</button>`;
+        }
         document.getElementById('rOv').classList.add('show');
-        setStatus('success', `🎉 ${label} WINS! 🎉`);
+        setStatus('success', `🎉 LEVEL CLEARED! 🎉`);
       }, 600);
       setTimeout(() => { ch.classList.remove('celebrate'); running = false; enableBtns(true); updateCheatBtn(); }, 2000);
     }
@@ -2236,10 +2293,13 @@
       setTimeout(() => {
         document.getElementById('rBig').textContent = 'GAME OVER';
         document.getElementById('rBig').style.color = 'var(--danger)';
-        document.getElementById('rSub').textContent = `${label} ran out of hearts!`;
+        document.getElementById('rSub').textContent = `Out of hearts!`;
         document.getElementById('rSub').style.color = 'var(--warn)';
-        document.getElementById('rDet').textContent = 'Tap to try again!';
+        document.getElementById('rDet').textContent = `Level ${cLvl + 1} · ${LEVELS[cLvl].name}`;
         document.getElementById('rDet').style.color = 'var(--td)';
+        document.getElementById('rActions').innerHTML = `
+          <button class="rb-btn primary" onclick="replayLevel()">🔄 TRY AGAIN</button>
+          <button class="rb-btn ghost" onclick="dismissRes();showLvSel()">📋 LEVELS</button>`;
         document.getElementById('rOv').classList.add('show');
         setStatus('fail', '💀 GAME OVER');
       }, 500);
@@ -2247,18 +2307,32 @@
     }
 
     function dismissRes() { document.getElementById('rOv').classList.remove('show'); }
+    function nextLevel() { dismissRes(); if (cLvl + 1 < LEVELS.length) loadLvl(cLvl + 1); }
+    function replayLevel() { dismissRes(); loadLvl(cLvl); }
 
     // ========== LEVEL SELECT ==========
+    function isLevelUnlocked(i) {
+      if (i === 0) return true;
+      const t = T();
+      if (!t) return false;
+      // Unlocked if previous level is completed, or we're already at/past it
+      return t.completed.includes(i - 1) || t.completed.includes(i) || i <= cLvl;
+    }
     function showLvSel() {
       if (running) return; const t = T();
       document.getElementById('lvG').innerHTML = LEVELS.map((l, i) => {
         const done = t && t.completed.includes(i);
-        return `<div class="lc" onclick="pickLv(${i})"><div class="num">${i + 1}</div><div class="dsc">${l.desc}</div>${done ? '<div class="chk">✅</div>' : ''}</div>`;
+        const unlocked = isLevelUnlocked(i);
+        const current = i === cLvl;
+        const cls = ['lc', done ? 'done' : '', current ? 'current' : '', !unlocked ? 'locked' : ''].filter(Boolean).join(' ');
+        const click = unlocked ? `onclick="pickLv(${i})"` : '';
+        const badge = !unlocked ? '<div class="lock">🔒</div>' : (done ? '<div class="chk">✅</div>' : '');
+        return `<div class="${cls}" ${click}><div class="num">LEVEL ${i + 1}</div><div class="nm">${l.name}</div><div class="dsc">${l.desc}</div>${badge}</div>`;
       }).join('');
       document.getElementById('lvOv').classList.add('show');
     }
     function hideLvSel() { document.getElementById('lvOv').classList.remove('show'); }
-    function pickLv(i) { hideLvSel(); loadLvl(i); }
+    function pickLv(i) { if (!isLevelUnlocked(i)) return; hideLvSel(); loadLvl(i); }
     function resetLv() { if (!running) loadLvl(cLvl); }
 
     // ========== FX ==========
@@ -2273,11 +2347,8 @@
 
     // ========== INIT ==========
     window.addEventListener('load', () => {
-      addTeam(); teams[0].name = 'Table 1'; teams[0].icon = '🐺';
-      addTeam(); teams[1].name = 'Table 2'; teams[1].icon = '🦊';
-      addTeam(); teams[2].name = 'Table 3'; teams[2].icon = '🐉';
-      aTI = 0; renderTS();
-      document.getElementById('tOv').classList.add('show');
+      teams = [{ name: 'Player', icon: '🧙', completed: [], gems: 0, cheat: randomCheat(), cheatUsedLevels: [] }];
+      aTI = 0;
       loadLvl(0); renderHP();
     });
     window.addEventListener('resize', () => updateChar(false));
@@ -2287,15 +2358,20 @@
       // Don't capture when typing in an input
       if (e.target.tagName === 'INPUT') return;
       // Don't capture when overlays are open
-      const overlaysOpen = document.getElementById('tOv').classList.contains('show') ||
-        document.getElementById('lvOv').classList.contains('show') ||
-        document.getElementById('confirmOv').classList.contains('show') ||
-        document.getElementById('epBackdrop').classList.contains('show');
+      const overlaysOpen = document.getElementById('lvOv').classList.contains('show') ||
+        document.getElementById('confirmOv').classList.contains('show');
       if (overlaysOpen) return;
 
-      // Dismiss result overlay on any key
+      // Result overlay: Enter / Space → next level (if win) or retry, Esc → dismiss
       if (document.getElementById('rOv').classList.contains('show')) {
-        dismissRes(); e.preventDefault(); return;
+        if (e.key === 'Enter' || e.key === ' ') {
+          const nextBtn = document.querySelector('#rActions .rb-btn.primary');
+          if (nextBtn) nextBtn.click();
+          e.preventDefault();
+        } else if (e.key === 'Escape') {
+          dismissRes(); e.preventDefault();
+        }
+        return;
       }
 
       switch (e.key) {
